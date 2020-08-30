@@ -18,6 +18,14 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::namespace("API")->group(function () {
+    Route::prefix('usuarios')->group(function () {
+        Route::get('/', 'UsuariosController@index')->name('index_usuarios');
+        Route::get('/{id}', 'UsuariosController@show')->name('unico_usuario');
+        Route::post('/', 'UsuariosController@store')->name('store_usuarios');
+    });
+});
+
 Route::get('/ok', function () {
     return ['status' => true];
 });

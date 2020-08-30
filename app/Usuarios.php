@@ -7,12 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class Usuarios extends Model
 {
     protected $fillable = [
-        'id',
         'nome',
         'login',
         'senha',
         'permissao',
-        'dt_criacao'
     ];
 
     protected $table = 'usuarios';

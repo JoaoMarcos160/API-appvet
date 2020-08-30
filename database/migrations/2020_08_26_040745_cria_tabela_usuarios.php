@@ -19,7 +19,6 @@ class CriaTabelaUsuarios extends Migration
             $table->string('login');
             $table->string('senha');
             $table->string('permissao');
-            $table->timestamp('dt_criacao');
             $table->timestamps();
         });
     }
