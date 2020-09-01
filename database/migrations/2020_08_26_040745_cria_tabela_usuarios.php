@@ -16,7 +16,7 @@ class CriaTabelaUsuarios extends Migration
         Schema::create('usuarios', function (Blueprint $table) {
             $table->increments('id');
             $table->string('nome');
-            $table->string('login');
+            $table->string('login')->unique();
             $table->string('senha');
             $table->string('permissao');
             $table->timestamps();

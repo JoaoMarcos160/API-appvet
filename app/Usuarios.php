@@ -11,6 +11,12 @@ class Usuarios extends Model
         'login',
         'senha',
         'permissao',
+        'created_at',
+        'updated_at',
+    ];
+
+    protected $attributes = [
+        'permissao' => '3',
     ];
 
     protected $table = 'usuarios';

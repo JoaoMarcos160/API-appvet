@@ -2,6 +2,7 @@
 
 use App\Animais;
 use App\Clientes;
+use App\User;
 use App\Usuarios;
 use Illuminate\Database\Seeder;
 

@@ -19,6 +19,8 @@ class Clientes extends Model
         'dt_nasc',
         'observacao',
         'email',
+        'created_at',
+        'updated_at',
     ];
 
     protected $table = 'clientes';

@@ -17,7 +17,9 @@ class Animais extends Model
         'sexo',
         'castrado',
         'cor',
-        'caminho_foto'
+        'caminho_foto',
+        'created_at',
+        'updated_at',
     ];
 
     protected $table = 'animais';
