@@ -2,6 +2,8 @@
 
 namespace App\Exceptions;
 
+use App\API\ApiError;
+use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 
@@ -50,6 +52,17 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
+        // dd($exception);
+        if ($request->is('api/usuarios/*')) {
+            if ($exception->getCode() == 0) {
+                //isso aqui significa que não encontrou nenhum usuário com esse id
+                return \response()->json(ApiError::errorMessage('Usuário não encontrado', 404));
+            } else {
+                return \response()->json(ApiError::errorMessage($exception->getMessage(), $exception->getCode()));
+            }
+            // ou utilizar o erro padrão passando seu erro personalizado
+            // return parent::render($request, $myexception);
+        }
         return parent::render($request, $exception);
     }
 }

@@ -21,6 +21,7 @@ Route::namespace("API")->group(function () {
     Route::prefix('usuarios')->group(function () {
         Route::get('/', 'UsuariosController@index')->name('index_usuarios');
         Route::get('/{id}', 'UsuariosController@show')->name('unico_usuario');
+        Route::get("/login", 'UsuariosController@login')->name('login_usuario');
         Route::post('/', 'UsuariosController@criar')->name('criar_usuarios');
         Route::put('/', 'UsuariosController@alterar')->name('alterar_usuarios');
         Route::delete('/', 'UsuariosController@deletar')->name('deletar_usuarios');
