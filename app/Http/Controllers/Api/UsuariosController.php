@@ -41,17 +41,26 @@ class UsuariosController extends Controller
 
     public function login(Request $request)
     {
-        return response()->json(['data' => ['msg' => "sucesso"]], 201);
-        // try {
-        //     // $usuarioData = $request->all();
-        //     // \print_r($usuarioData);
-        //     return response()->json(['data' => ['msg' => "sucesso"]], 201);
-        // } catch (\Exception $e) {
-        //     if (config('app.debug')) {
-        //         return response()->json(ApiError::errorMessage($e->getMessage(), 1010));
-        //     }
-        //     return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação  de ' . __FUNCTION__, 1010));
-        // }
+        // return response()->json(['data' => ['msg' => "sucesso"]], 201);
+        try {
+            $usuarioData = $request->all();
+            $usuario_encontrado = Usuarios::where('login', $usuarioData['login'])
+                ->get();
+            // dd($usuario_encontrado);
+            if ($usuario_encontrado->isEmpty()) {
+                return response()->json(['data' => ['msg' => 'Login não encontrado']], 201);
+            }
+            if (Hash::check($usuarioData['senha'], $usuario_encontrado[0]->senha)) {
+                //colocar geração de token de autenticação aqui
+                return response()->json(['data' => ['msg' => 'Sucesso']], 201);
+            }
+            return response()->json(['data' => ['msg' => 'Senha incorreta']], 201);
+        } catch (\Exception $e) {
+            if (config('app.debug')) {
+                return response()->json(ApiError::errorMessage($e->getMessage(), 1010));
+            }
+            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação  de ' . __FUNCTION__, 1010));
+        }
     }
 
     public function criar(Request $request)
@@ -87,7 +96,7 @@ class UsuariosController extends Controller
                 return response()->json(ApiError::errorMessage("Já existe um usuario com esse login", 422), 422);
             }
             if (config('app.debug')) {
-                return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 1010);
+                return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 200);
             }
             return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação  de ' . __FUNCTION__, 1010));
         }
