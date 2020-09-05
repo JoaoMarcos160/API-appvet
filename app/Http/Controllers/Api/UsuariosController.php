@@ -52,6 +52,7 @@ class UsuariosController extends Controller
             }
             if (Hash::check($usuarioData['senha'], $usuario_encontrado[0]->senha)) {
                 //colocar geração de token de autenticação aqui
+
                 return response()->json(['data' => ['msg' => 'Sucesso']], 201);
             }
             return response()->json(['data' => ['msg' => 'Senha incorreta']], 201);
@@ -116,7 +117,7 @@ class UsuariosController extends Controller
                 $usuario_encontrado->delete($usuarioData);
                 return response()->json(['data' => ['msg' => "Usuario " . $request['id'] . " deletado com sucesso"]], 201);
             }
-            return response()->json(ApiError::errorMessage("Usuario de id $usuarioData[id] nao encontrado", 404));
+            return response()->json(ApiError::errorMessage("Usuario de id $usuarioData[id] nao encontrado", 404), 404);
         } catch (\Exception $e) {
             if (config('app.debug')) {
                 return response()->json(ApiError::errorMessage($e->getMessage(), 1010));

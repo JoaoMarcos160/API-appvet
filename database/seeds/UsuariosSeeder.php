@@ -15,7 +15,7 @@ class UsuariosSeeder extends Seeder
      */
     public function run()
     {
-        factory(Usuarios::class, 3)->create()->each(
+        factory(Usuarios::class, 5)->create()->each(
             function ($usuario) {
                 $usuario->clientes()->saveMany(factory(Clientes::class, rand(3, 10))->create()->each(
                     function ($cliente) {

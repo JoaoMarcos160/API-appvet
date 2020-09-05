@@ -18,23 +18,24 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::namespace("API")->group(function () {
-    Route::prefix('usuarios')->group(function () {
-        Route::get("/login", 'UsuariosController@login')->name('login_usuario');
-        Route::get('/{id}', 'UsuariosController@show')->name('unico_usuario');
-        Route::get('/', 'UsuariosController@index')->name('index_usuarios');
-        Route::post('/', 'UsuariosController@criar')->name('criar_usuarios');
-        Route::put('/', 'UsuariosController@alterar')->name('alterar_usuarios');
-        Route::delete('/', 'UsuariosController@deletar')->name('deletar_usuarios');
+    Route::prefix("usuarios")->group(function () {
+        Route::get("/{id}", "UsuariosController@show")->name("unico_usuario");
+        Route::get("/", "UsuariosController@index")->name("index_usuarios");
+        Route::post("/login", "UsuariosController@login")->name("login_usuario");
+        Route::post("/", "UsuariosController@criar")->name("criar_usuarios");
+        Route::put("/", "UsuariosController@alterar")->name("alterar_usuarios");
+        Route::delete("/", "UsuariosController@deletar")->name("deletar_usuarios");
     });
-    // Route::prefix('clientes')->group(function () {
-    //     Route::get('/', 'UsuariosController@index')->name('index_usuarios');
-    //     Route::get('/{id}', 'UsuariosController@show')->name('unico_usuario');
-    //     Route::post('/', 'UsuariosController@criar')->name('criar_usuarios');
-    //     Route::put('/', 'UsuariosController@alterar')->name('alterar_usuarios');
-    //     Route::delete('/', 'UsuariosController@deletar')->name('deletar_usuarios');
-    // });
+    Route::prefix("clientes")->group(function () {
+        Route::get("/", "ClientesController@index")->name("index_clientes");
+        Route::get("/{id}", "ClientesController@show")->name("unico_cliente");
+        Route::post("/listar", "ClientesController@listar_clientes")->name("listar_cliente");
+        Route::post("/", "ClientesController@criar")->name("criar_clientes");
+        Route::put("/", "ClientesController@alterar")->name("alterar_clientes");
+        Route::delete("/", "ClientesController@deletar")->name("deletar_clientes");
+    });
 });
 
-Route::get('/ok', function () {
-    return ['status' => true];
+Route::get("/ok", function () {
+    return ["status" => true];
 });

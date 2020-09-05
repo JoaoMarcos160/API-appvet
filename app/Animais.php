@@ -23,4 +23,9 @@ class Animais extends Model
     ];
 
     protected $table = 'animais';
+
+    public function clientes()
+    {
+        return $this->belongsTo(Clientes::class, 'cliente_id');
+    }
 }

@@ -58,11 +58,27 @@ class Handler extends ExceptionHandler
                 //isso aqui significa que não encontrou nenhum usuário com esse id
                 return \response()->json(ApiError::errorMessage('Usuário não encontrado', 404));
             } else {
-                return \response()->json(ApiError::errorMessage($exception->getMessage(), $exception->getCode()));
+                if (config('app.debug')) {
+                    return \response()->json(ApiError::errorMessage($exception->getMessage(), $exception->getCode()));
+                }
+                return \response()->json(ApiError::errorMessage("Algo deu errado", 400), 404);
+            }
+        }
+        if ($request->is('api/clientes/*')) {
+            if ($exception->getCode() == 0) {
+                //isso aqui significa que não encontrou nenhum usuário com esse id
+                return \response()->json(ApiError::errorMessage('Cliente não encontrado', 404));
+            } else {
+                if (config('app.debug')) {
+                    return \response()->json(ApiError::errorMessage($exception->getMessage(), $exception->getCode()));
+                }
+                return \response()->json(ApiError::errorMessage("Algo deu errado", 400), 404);
             }
             // ou utilizar o erro padrão passando seu erro personalizado
             // return parent::render($request, $myexception);
         }
+        //Erro padrão sem retorno personalizado
+        //Nesse caso aqui o Laravel retorna a pagina 404
         return parent::render($request, $exception);
     }
 }
