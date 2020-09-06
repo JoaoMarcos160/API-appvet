@@ -8,6 +8,8 @@ use App\Http\Controllers\Controller;
 use Exception;
 use Illuminate\Http\Request;
 
+use function GuzzleHttp\Psr7\str;
+
 class ClientesController extends Controller
 {
     public function __construct(Clientes $cliente)
@@ -103,6 +105,7 @@ class ClientesController extends Controller
         try {
             $clienteData = $request->all();
             $clientes_encontrados = Clientes::where('usuario_id', $clienteData['usuario_id'])
+                ->orderBy('nome')
                 ->get();
             // ->paginate(10); // se quiser usar paginação tem que tirar o ->get();
             // dd($clientes_encontrados);
@@ -110,6 +113,58 @@ class ClientesController extends Controller
                 return response()->json(['data' => $clientes_encontrados], 200);
             }
             return response()->json(['data' => 'Nenhum cliente encontrado'], 200);
+        } catch (\Exception $e) {
+            if (config('app.debug')) {
+                return response()->json(ApiError::errorMessage($e->getMessage(), 1010));
+            }
+            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação de ' . __FUNCTION__, 1010));
+        }
+    }
+
+    public function buscar_cliente(Request $request)
+    {
+        try {
+            $clienteData = $request->all();
+            // print_r($clienteData['nome']);
+            if (isset($clienteData['usuario_id'])) {
+                //construindo a query
+                $result = Clientes::when(
+                    isset($clienteData->nome),
+                    function ($q, $clienteData) {
+                        print_r($clienteData->nome);
+                        return $q->where('nome', $clienteData->nome);
+                    }
+                )->where('usuario_id', $clienteData['usuario_id'])
+
+                    ->get();
+                // $clientes_encontrados = Clientes::where("usuario_id", $clienteData['usuario_id'])
+                // ->when(
+                //     isset($clienteData['nome']) == true,
+                //     function ($q, $clienteData) {
+                //         print_r($clienteData['nome']);
+                //         return $q->where('cpf', $clienteData['cpf']);
+                //     }
+                // )
+                // ->orderBy('nome')
+                // ->get();
+                // print_r($query);
+                // "nome": "Sr. Simon Corona Gonçalves Filho",
+                // "cpf": "47185457279",
+                // "telefone": "(45) 95077-9321",
+                // "endereco": "Avenida Elias, 1",
+                // "cidade": "Santa Kevin do Leste",
+                // "estado": "Acre",
+                // "cep": null,
+                // "dt_nasc": "1992-06-12 00:00:00",
+                // "observacao": null,
+                // "email": null,
+
+                if ($result->isEmpty()) {
+                    return response()->json(['data' => ["msg" => 'Nenhum cliente encontrado']], 404);
+                }
+                return response()->json(['data' => $result]);
+            }
+            return \response()->json(["data" => ['msg' => "Falta um id do usuario!"]], 422);
         } catch (\Exception $e) {
             if (config('app.debug')) {
                 return response()->json(ApiError::errorMessage($e->getMessage(), 1010));

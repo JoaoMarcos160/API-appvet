@@ -44,18 +44,18 @@ class UsuariosController extends Controller
         // return response()->json(['data' => ['msg' => "sucesso"]], 201);
         try {
             $usuarioData = $request->all();
-            $usuario_encontrado = Usuarios::where('login', $usuarioData['login'])
+            $usuario_encontrado = Usuarios::select('login', 'senha')->where('login', $usuarioData['login'])
                 ->get();
             // dd($usuario_encontrado);
             if ($usuario_encontrado->isEmpty()) {
-                return response()->json(['data' => ['msg' => 'Login não encontrado']], 201);
+                return response()->json(['data' => ['msg' => 'Login não encontrado']], 404);
             }
             if (Hash::check($usuarioData['senha'], $usuario_encontrado[0]->senha)) {
                 //colocar geração de token de autenticação aqui
 
-                return response()->json(['data' => ['msg' => 'Sucesso']], 201);
+                return response()->json(['data' => ['msg' => 'Sucesso']], 200);
             }
-            return response()->json(['data' => ['msg' => 'Senha incorreta']], 201);
+            return response()->json(['data' => ['msg' => 'Senha incorreta']], 200);
         } catch (\Exception $e) {
             if (config('app.debug')) {
                 return response()->json(ApiError::errorMessage($e->getMessage(), 1010));

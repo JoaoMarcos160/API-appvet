@@ -27,9 +27,10 @@ Route::namespace("API")->group(function () {
         Route::delete("/", "UsuariosController@deletar")->name("deletar_usuarios");
     });
     Route::prefix("clientes")->group(function () {
-        Route::get("/", "ClientesController@index")->name("index_clientes");
         Route::get("/{id}", "ClientesController@show")->name("unico_cliente");
-        Route::post("/listar", "ClientesController@listar_clientes")->name("listar_cliente");
+        Route::get("/", "ClientesController@index")->name("index_clientes");
+        Route::post("/listar", "ClientesController@listar_clientes")->name("listar_clientes");
+        Route::post("/buscar", "ClientesController@buscar_cliente")->name("buscar_cliente");
         Route::post("/", "ClientesController@criar")->name("criar_clientes");
         Route::put("/", "ClientesController@alterar")->name("alterar_clientes");
         Route::delete("/", "ClientesController@deletar")->name("deletar_clientes");

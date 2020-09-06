@@ -57,6 +57,11 @@ class Handler extends ExceptionHandler
             if ($exception->getCode() == 0) {
                 //isso aqui significa que não encontrou nenhum usuário com esse id
                 return \response()->json(ApiError::errorMessage('Usuário não encontrado', 404));
+            } else if ($exception->getCode() == 42000) {
+                if (config('app.debug')) {
+                    return \response()->json(ApiError::errorMessage($exception->getMessage(), $exception->getCode()));
+                }
+                return \response()->json(ApiError::errorMessage('Erro no SQL', 500));
             } else {
                 if (config('app.debug')) {
                     return \response()->json(ApiError::errorMessage($exception->getMessage(), $exception->getCode()));
@@ -68,6 +73,11 @@ class Handler extends ExceptionHandler
             if ($exception->getCode() == 0) {
                 //isso aqui significa que não encontrou nenhum usuário com esse id
                 return \response()->json(ApiError::errorMessage('Cliente não encontrado', 404));
+            } else if ($exception->getCode() == 42000) {
+                if (config('app.debug')) {
+                    return \response()->json(ApiError::errorMessage($exception->getMessage(), $exception->getCode()));
+                }
+                return \response()->json(ApiError::errorMessage('Erro no SQL', 500));
             } else {
                 if (config('app.debug')) {
                     return \response()->json(ApiError::errorMessage($exception->getMessage(), $exception->getCode()));
