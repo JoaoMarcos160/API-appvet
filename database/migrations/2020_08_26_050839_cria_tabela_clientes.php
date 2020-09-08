@@ -18,7 +18,7 @@ class CriaTabelaClientes extends Migration
             $table->integer('usuario_id')->unsigned();
             $table->foreign('usuario_id')->references('id')->on('usuarios')->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('nome')->ucwords();
-            $table->string('cpf')->unique()->nullable();
+            $table->string('cpf')->nullable();
             $table->string('telefone')->nullable();
             $table->string('endereco')->nullable();
             $table->string('cidade')->nullable();

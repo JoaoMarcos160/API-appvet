@@ -5,10 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\API\ApiError;
 use App\Clientes;
 use App\Http\Controllers\Controller;
-use Exception;
 use Illuminate\Http\Request;
-
-use function GuzzleHttp\Psr7\str;
 
 class ClientesController extends Controller
 {
@@ -125,44 +122,109 @@ class ClientesController extends Controller
     {
         try {
             $clienteData = $request->all();
-            // print_r($clienteData['nome']);
             if (isset($clienteData['usuario_id'])) {
                 //construindo a query
-                $result = Clientes::when(
-                    isset($clienteData->nome),
-                    function ($q, $clienteData) {
-                        print_r($clienteData->nome);
-                        return $q->where('nome', $clienteData->nome);
+                $query = Clientes::query();
+                $query->where('usuario_id', request('usuario_id'));
+                $query->when(
+                    isset($clienteData['nome']),
+                    function ($q) {
+                        $nome = request('nome');
+                        return $q->where('nome', 'like', "%$nome%");
                     }
-                )->where('usuario_id', $clienteData['usuario_id'])
+                );
+                $query->when(
+                    isset($clienteData['cpf']),
+                    function ($q) {
+                        $cpf = request('cpf');
+                        return $q->where('cpf', 'like', "%$cpf%");
+                    }
+                );
+                $query->when(
+                    isset($clienteData['telefone']),
+                    function ($q) {
+                        $telefone = request('telefone');
+                        return $q->where('telefone', 'like', "%$telefone%");
+                    }
+                );
+                $query->when(
+                    isset($clienteData['endereco']),
+                    function ($q) {
+                        $endereco = request('endereco');
+                        return $q->where('endereco', 'like', "%$endereco%");
+                    }
+                );
+                $query->when(
+                    isset($clienteData['cidade']),
+                    function ($q) {
+                        $cidade = request('cidade');
+                        return $q->where('cidade', 'like', "%$cidade%");
+                    }
+                );
+                $query->when(
+                    isset($clienteData['estado']),
+                    function ($q) {
+                        $estado = request('estado');
+                        return $q->where('estado', 'like', "%$estado%");
+                    }
+                );
+                $query->when(
+                    isset($clienteData['dt_nasc']),
+                    function ($q) {
+                        $dt_nasc = request('dt_nasc');
+                        return $q->whereDate('dt_nasc', $dt_nasc);
+                    }
+                );
+                $query->when(
+                    isset($clienteData['observacao']),
+                    function ($q) {
+                        $observacao = request('observacao');
+                        return $q->where('observacao', 'like',  "%$observacao%");
+                    }
+                );
+                $query->when(
+                    isset($clienteData['email']),
+                    function ($q) {
+                        $email = request('email');
+                        return $q->where('email', 'like',  "%$email%");
+                    }
+                );
+                $query->when(
+                    isset($clienteData['created_at']),
+                    function ($q) {
+                        $created_at = request('created_at');
+                        return $q->whereDate('created_at',  "%$created_at%");
+                    }
+                );
+                $query->when(
+                    isset($clienteData['update_at']),
+                    function ($q) {
+                        $update_at = request('update_at');
+                        return $q->whereDate('update_at',  "%$update_at%");
+                    }
+                );
+                $query->orderBy('nome');
+                $clientes_encontrados = $query->get();
 
-                    ->get();
-                // $clientes_encontrados = Clientes::where("usuario_id", $clienteData['usuario_id'])
-                // ->when(
-                //     isset($clienteData['nome']) == true,
-                //     function ($q, $clienteData) {
-                //         print_r($clienteData['nome']);
-                //         return $q->where('cpf', $clienteData['cpf']);
-                //     }
-                // )
-                // ->orderBy('nome')
-                // ->get();
-                // print_r($query);
-                // "nome": "Sr. Simon Corona Gonçalves Filho",
-                // "cpf": "47185457279",
-                // "telefone": "(45) 95077-9321",
-                // "endereco": "Avenida Elias, 1",
-                // "cidade": "Santa Kevin do Leste",
-                // "estado": "Acre",
-                // "cep": null,
-                // "dt_nasc": "1992-06-12 00:00:00",
-                // "observacao": null,
-                // "email": null,
+                /*
+                AQUI EM BAIXO NESSE FOREACH ERA UMA TENTATIVA DE 
+                LER O REQUEST E COLOCAR CADA PARAMETRO AUTOMATICAMENTE
+                NA QUERY, MAS DECIDI FAZER CADA UMA SEPARADA PARA MAPEAR CERTO
+                QUAIS OS PARAMETROS E OS CAMPOS DA CONSULTA, EVITANDO ASSIM BUGS.
+                */
+                // foreach ($clienteData as $key => $value) {
+                //     $query->when(
+                //         isset($clienteData[$key]),
+                //         function ($q, $value, $key) {
+                //             return $q->where($key, 'like', "%$value%");
+                //         }
+                //     );
+                // }
 
-                if ($result->isEmpty()) {
+                if ($clientes_encontrados->isEmpty()) {
                     return response()->json(['data' => ["msg" => 'Nenhum cliente encontrado']], 404);
                 }
-                return response()->json(['data' => $result]);
+                return response()->json(['data' => $clientes_encontrados]);
             }
             return \response()->json(["data" => ['msg' => "Falta um id do usuario!"]], 422);
         } catch (\Exception $e) {
