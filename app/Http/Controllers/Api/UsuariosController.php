@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\API\ApiError;
 use App\Http\Controllers\Controller;
 use App\Usuarios;
-use Facade\FlareClient\Api;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -44,13 +43,13 @@ class UsuariosController extends Controller
         // return response()->json(['data' => ['msg' => "sucesso"]], 201);
         try {
             $usuarioData = $request->all();
-            $usuario_encontrado = Usuarios::select('login', 'senha')->where('login', $usuarioData['login'])
+            $usuario_encontrado = Usuarios::select('login', 'senha')->where('login', request('login'))
                 ->get();
             // dd($usuario_encontrado);
             if ($usuario_encontrado->isEmpty()) {
                 return response()->json(['data' => ['msg' => 'Login não encontrado']], 404);
             }
-            if (Hash::check($usuarioData['senha'], $usuario_encontrado[0]->senha)) {
+            if (Hash::check(request('senha'), $usuario_encontrado[0]->senha)) {
                 //colocar geração de token de autenticação aqui
 
                 return response()->json(['data' => ['msg' => 'Sucesso']], 200);

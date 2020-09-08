@@ -28,7 +28,6 @@ class ClientesController extends Controller
     {
         try {
             $data = ['data' => $id];
-            // \print_r($data);
             return response()->json($data);
         } catch (\Exception $e) {
             if (config('app.debug')) {
@@ -96,26 +95,32 @@ class ClientesController extends Controller
     public function listar_clientes(Request $request)
     {
         /*
-        Esse listar_clientes deve receber o id do usuario, e ele vai retornar todos os usuarios
+        Esse listar_clientes deve receber o id do usuario, 
+        e ele vai retornar todos os clientes
         vinculados a esse usuario
+        No final das contas ele tem o mesmo resultado do buscar_clientes
+        quando não passa nenhum parametro, apenas muda a performance
         */
         try {
             $clienteData = $request->all();
-            $clientes_encontrados = Clientes::where('usuario_id', $clienteData['usuario_id'])
-                ->orderBy('nome')
-                ->get();
-            // ->paginate(10); // se quiser usar paginação tem que tirar o ->get();
-            // dd($clientes_encontrados);
-            if (!$clientes_encontrados->isEmpty()) {
-                return response()->json(['data' => $clientes_encontrados], 200);
+            if (isset($clienteData['usuario_id'])) {
+                $clientes_encontrados = Clientes::where('usuario_id', request('usuario_id'))
+                    ->orderBy('nome')
+                    ->get();
+                // ->paginate(10); // se quiser usar paginação tem que tirar o ->get();
+                if (!$clientes_encontrados->isEmpty()) {
+                    return response()->json(['data' => $clientes_encontrados], 200);
+                }
+                return response()->json(['data' => 'Nenhum cliente encontrado'], 200);
             }
-            return response()->json(['data' => 'Nenhum cliente encontrado'], 200);
+            return \response()->json(["data" => ['msg' => "Falta um id do usuario!"]], 422);
         } catch (\Exception $e) {
             if (config('app.debug')) {
                 return response()->json(ApiError::errorMessage($e->getMessage(), 1010));
             }
             return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação de ' . __FUNCTION__, 1010));
         }
+        return \response()->json(["data" => ['msg' => "Falta um id do usuario!"]], 422);
     }
 
     public function buscar_cliente(Request $request)

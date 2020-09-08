@@ -35,8 +35,18 @@ Route::namespace("API")->group(function () {
         Route::put("/", "ClientesController@alterar")->name("alterar_clientes");
         Route::delete("/", "ClientesController@deletar")->name("deletar_clientes");
     });
+    Route::prefix("animais")->group(function () {
+        Route::get("/{id}", "AnimaisController@show")->name("unico_animais");
+        Route::get("/", "AnimaisController@index")->name("index_animais");
+        Route::post("/listar", "AnimaisController@listar_animais")->name("listar_animais");
+        // Route::post("/buscar", "AnimaisController@buscar_animais")->name("buscar_animais");
+        // Route::post("/", "AnimaisController@criar")->name("criar_animais");
+        // Route::put("/", "AnimaisController@alterar")->name("alterar_animais");
+        // Route::delete("/", "AnimaisController@deletar")->name("deletar_animais");
+    });
 });
 
 Route::get("/ok", function () {
+    //função só pra conferir se a api está online
     return ["status" => true];
 });
