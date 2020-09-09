@@ -32,9 +32,9 @@ class UsuariosController extends Controller
             //Tratamento de usuario não encontrado colocado dentro de app\Exceptions\Handler.php
         } catch (\Exception $e) {
             if (config('app.debug')) {
-                return response()->json(ApiError::errorMessage($e->getMessage(), 1010));
+                return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 500);
             }
-            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação de ' . __FUNCTION__, 1010));
+            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação de ' . __FUNCTION__, 1010), 500);
         }
     }
 
@@ -57,9 +57,9 @@ class UsuariosController extends Controller
             return response()->json(['data' => ['msg' => 'Senha incorreta']], 200);
         } catch (\Exception $e) {
             if (config('app.debug')) {
-                return response()->json(ApiError::errorMessage($e->getMessage(), 1010));
+                return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 500);
             }
-            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação  de ' . __FUNCTION__, 1010));
+            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação  de ' . __FUNCTION__, 1010), 500);
         }
     }
 
@@ -75,9 +75,9 @@ class UsuariosController extends Controller
                 return response()->json(ApiError::errorMessage("Já existe um usuario com esse login", 422), 422);
             }
             if (config('app.debug')) {
-                return response()->json(ApiError::errorMessage($e->getMessage(), 1010));
+                return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 500);
             }
-            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação de ' . __FUNCTION__, 1010));
+            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação de ' . __FUNCTION__, 1010), 500);
         }
     }
 
@@ -96,9 +96,9 @@ class UsuariosController extends Controller
                 return response()->json(ApiError::errorMessage("Já existe um usuario com esse login", 422), 422);
             }
             if (config('app.debug')) {
-                return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 200);
+                return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 500);
             }
-            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação  de ' . __FUNCTION__, 1010));
+            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação  de ' . __FUNCTION__, 1010), 500);
         }
     }
 
@@ -114,14 +114,14 @@ class UsuariosController extends Controller
             $usuario_encontrado = $this->usuario->find($usuarioData['id']);
             if (isset($usuario_encontrado)) {
                 $usuario_encontrado->delete($usuarioData);
-                return response()->json(['data' => ['msg' => "Usuario " . $request['id'] . " deletado com sucesso"]], 201);
+                return response()->json(['data' => ['msg' => "Usuario " . $request['id'] . " deletado com sucesso"]], 200);
             }
             return response()->json(ApiError::errorMessage("Usuario de id $usuarioData[id] nao encontrado", 404), 404);
         } catch (\Exception $e) {
             if (config('app.debug')) {
-                return response()->json(ApiError::errorMessage($e->getMessage(), 1010));
+                return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 500);
             }
-            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação de ' . __FUNCTION__, 1010));
+            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação de ' . __FUNCTION__, 1010), 500);
         }
     }
 }

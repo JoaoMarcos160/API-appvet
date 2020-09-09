@@ -56,15 +56,15 @@ class Handler extends ExceptionHandler
         if ($request->is('api/usuarios/*')) {
             if ($exception->getCode() == 0) {
                 //isso aqui significa que não encontrou nenhum usuário com esse id
-                return \response()->json(ApiError::errorMessage('Usuário não encontrado', 404));
+                return \response()->json(ApiError::errorMessage('Usuário não encontrado', 404), 404);
             } else if ($exception->getCode() == 42000) {
                 if (config('app.debug')) {
-                    return \response()->json(ApiError::errorMessage($exception->getMessage(), $exception->getCode()));
+                    return \response()->json(ApiError::errorMessage($exception->getMessage(), $exception->getCode()), 500);
                 }
-                return \response()->json(ApiError::errorMessage('Erro no SQL', 500));
+                return \response()->json(ApiError::errorMessage('Erro no SQL', 500), 500);
             } else {
                 if (config('app.debug')) {
-                    return \response()->json(ApiError::errorMessage($exception->getMessage(), $exception->getCode()));
+                    return \response()->json(ApiError::errorMessage($exception->getMessage(), $exception->getCode()), 500);
                 }
                 return \response()->json(ApiError::errorMessage("Algo deu errado", 400), 404);
             }
@@ -72,23 +72,40 @@ class Handler extends ExceptionHandler
         if ($request->is('api/clientes/*')) {
             if ($exception->getCode() == 0) {
                 //isso aqui significa que não encontrou nenhum usuário com esse id
-                return \response()->json(ApiError::errorMessage('Cliente não encontrado', 404));
+                return \response()->json(ApiError::errorMessage('Cliente não encontrado', 404), 404);
             } else if ($exception->getCode() == 42000) {
                 if (config('app.debug')) {
-                    return \response()->json(ApiError::errorMessage($exception->getMessage(), $exception->getCode()));
+                    return \response()->json(ApiError::errorMessage($exception->getMessage(), $exception->getCode()), 500);
                 }
-                return \response()->json(ApiError::errorMessage('Erro no SQL', 500));
+                return \response()->json(ApiError::errorMessage('Erro no SQL', 500), 500);
             } else {
                 if (config('app.debug')) {
-                    return \response()->json(ApiError::errorMessage($exception->getMessage(), $exception->getCode()));
+                    return \response()->json(ApiError::errorMessage($exception->getMessage(), $exception->getCode()), 500);
                 }
                 return \response()->json(ApiError::errorMessage("Algo deu errado", 400), 404);
             }
-            // ou utilizar o erro padrão passando seu erro personalizado
-            // return parent::render($request, $myexception);
         }
-        //Erro padrão sem retorno personalizado
-        //Nesse caso aqui o Laravel retorna a pagina 404
+        if ($request->is('api/animais/*')) {
+            if ($exception->getCode() == 0) {
+                //isso aqui significa que não encontrou nenhum usuário com esse id
+                return \response()->json(ApiError::errorMessage('Animal não encontrado', 404));
+            } else if ($exception->getCode() == 42000) {
+                if (config('app.debug')) {
+                    return \response()->json(ApiError::errorMessage($exception->getMessage(), $exception->getCode()), 500);
+                }
+                return \response()->json(ApiError::errorMessage('Erro no SQL', 500), 500);
+            } else {
+                if (config('app.debug')) {
+                    return \response()->json(ApiError::errorMessage($exception->getMessage(), $exception->getCode()), 500);
+                }
+                return \response()->json(ApiError::errorMessage("Algo deu errado", 400), 500);
+            }
+        }
+        // Descomentar essa linha em produção
+        // return \response()->json(ApiError::errorMessage("Algo deu errado", 400));
+
+        // Erro padrão sem retorno personalizado
+        // Nesse caso aqui o Laravel retorna a pagina 404
         return parent::render($request, $exception);
     }
 }

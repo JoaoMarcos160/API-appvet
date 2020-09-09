@@ -12,7 +12,7 @@ $factory->define(Animais::class, function (Faker $faker) {
         'observacao' =>  $faker->boolean(35) ? $faker->text() : null,
         'microchip' => $faker->boolean(10) ? $faker->asciify('********************') : null,
         'tag' => $faker->boolean(10) ? $faker->asciify('************') : null,
-        'sexo' => $faker->boolean() ? 'M' : 'S',
+        'sexo' => $faker->boolean() ? 'M' : 'F',
         'castrado' => $faker->boolean(),
         'cor' => $faker->boolean() ? $faker->colorName : null,
         'caminho_foto' => $faker->boolean() ? $faker->imageUrl() : null,

@@ -31,9 +31,9 @@ class ClientesController extends Controller
             return response()->json($data);
         } catch (\Exception $e) {
             if (config('app.debug')) {
-                return response()->json(ApiError::errorMessage($e->getMessage(), 1010));
+                return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 500);
             }
-            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação de ' . __FUNCTION__, 1010));
+            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação de ' . __FUNCTION__, 1010), 500);
         }
     }
 
@@ -48,9 +48,9 @@ class ClientesController extends Controller
                 return response()->json(["data" => ["msg" => "Faltou o id do usuário ou o nome do cliente", "code" => 1010]], 422);
             }
             if (config('app.debug')) {
-                return response()->json(ApiError::errorMessage($e->getMessage(), 1010));
+                return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 500);
             }
-            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação de ' . __FUNCTION__, 1010));
+            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação de ' . __FUNCTION__, 1010), 500);
         }
     }
 
@@ -63,9 +63,9 @@ class ClientesController extends Controller
             return response()->json(['data' => ['msg' => "Cliente alterado com sucesso"]], 201);
         } catch (\Exception $e) {
             if (config('app.debug')) {
-                return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 200);
+                return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 500);
             }
-            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação  de ' . __FUNCTION__, 1010));
+            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação  de ' . __FUNCTION__, 1010), 500);
         }
     }
 
@@ -81,14 +81,14 @@ class ClientesController extends Controller
             $cliente_encontrado = $this->cliente->find($clienteData['id']);
             if (isset($cliente_encontrado)) {
                 $cliente_encontrado->delete($clienteData);
-                return response()->json(['data' => ['msg' => "Cliente " . $request['id'] . " deletado com sucesso"]], 201);
+                return response()->json(['data' => ['msg' => "Cliente " . $request['id'] . " deletado com sucesso"]], 200);
             }
             return response()->json(ApiError::errorMessage("Cliente de id $clienteData[id] nao encontrado", 404), 404);
         } catch (\Exception $e) {
             if (config('app.debug')) {
-                return response()->json(ApiError::errorMessage($e->getMessage(), 1010));
+                return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 500);
             }
-            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação de ' . __FUNCTION__, 1010));
+            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação de ' . __FUNCTION__, 1010), 500);
         }
     }
 
@@ -116,11 +116,10 @@ class ClientesController extends Controller
             return \response()->json(["data" => ['msg' => "Falta um id do usuario!"]], 422);
         } catch (\Exception $e) {
             if (config('app.debug')) {
-                return response()->json(ApiError::errorMessage($e->getMessage(), 1010));
+                return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 500);
             }
-            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação de ' . __FUNCTION__, 1010));
+            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação de ' . __FUNCTION__, 1010), 500);
         }
-        return \response()->json(["data" => ['msg' => "Falta um id do usuario!"]], 422);
     }
 
     public function buscar_cliente(Request $request)
@@ -198,14 +197,14 @@ class ClientesController extends Controller
                     isset($clienteData['created_at']),
                     function ($q) {
                         $created_at = request('created_at');
-                        return $q->whereDate('created_at',  "%$created_at%");
+                        return $q->whereDate('created_at',  $created_at);
                     }
                 );
                 $query->when(
-                    isset($clienteData['update_at']),
+                    isset($clienteData['updated_at']),
                     function ($q) {
-                        $update_at = request('update_at');
-                        return $q->whereDate('update_at',  "%$update_at%");
+                        $updated_at = request('updated_at');
+                        return $q->whereDate('updated_at',  $updated_at);
                     }
                 );
                 $query->orderBy('nome');
@@ -234,9 +233,9 @@ class ClientesController extends Controller
             return \response()->json(["data" => ['msg' => "Falta um id do usuario!"]], 422);
         } catch (\Exception $e) {
             if (config('app.debug')) {
-                return response()->json(ApiError::errorMessage($e->getMessage(), 1010));
+                return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 500);
             }
-            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação de ' . __FUNCTION__, 1010));
+            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação de ' . __FUNCTION__, 1010), 500);
         }
     }
 }
