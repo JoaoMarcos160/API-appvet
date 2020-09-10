@@ -7,6 +7,7 @@ use Faker\Generator as Faker;
 
 $factory->define(Animais::class, function (Faker $faker) {
     return [
+        'cliente_id' => 1,
         'nome_animal' => $faker->firstName,
         'dt_nasc' => $faker->boolean(60) ? $faker->date() : null,
         'observacao' =>  $faker->boolean(35) ? $faker->text() : null,

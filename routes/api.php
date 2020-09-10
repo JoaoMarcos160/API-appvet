@@ -40,9 +40,9 @@ Route::namespace("API")->group(function () {
         Route::get("/", "AnimaisController@index")->name("index_animais");
         Route::post("/listar", "AnimaisController@listar_animais")->name("listar_animais");
         Route::post("/buscar", "AnimaisController@buscar_animal")->name("buscar_animal");
-        // Route::post("/", "AnimaisController@criar")->name("criar_animais");
-        // Route::put("/", "AnimaisController@alterar")->name("alterar_animais");
-        // Route::delete("/", "AnimaisController@deletar")->name("deletar_animais");
+        Route::post("/", "AnimaisController@criar")->name("criar_animais");
+        Route::put("/", "AnimaisController@alterar")->name("alterar_animais");
+        Route::delete("/", "AnimaisController@deletar")->name("deletar_animais");
     });
 });
 

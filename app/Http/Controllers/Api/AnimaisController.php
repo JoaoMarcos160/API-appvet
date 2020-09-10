@@ -16,11 +16,11 @@ class AnimaisController extends Controller
 
     public function index()
     {
-        // $data = ['data' => $this->cliente->paginate(10)];
-        // $data = ['data' => $this->cliente->all()];
-        // $data = ['data' => "Coloque na URL o id do cliente! Ex.: /api/clientes/25"];
+        // $data = ['data' => $this->animal->paginate(10)];
+        // $data = ['data' => $this->animal->all()];
+        // $data = ['data' => "Coloque na URL o id do animal! Ex.: /api/animais/25"];
         $data = ['data' => 'Você precisa estar logado!'];
-        //na vdd vc precisa passar o id do usuario e ele trará os clientes
+        //na vdd vc precisa passar o id do usuario e ele trará os animais
         return response()->json($data);
     }
 
@@ -168,6 +168,61 @@ class AnimaisController extends Controller
                 return response()->json(['data' => $animais_encontrados], 200);
             }
             return \response()->json(["data" => ['msg' => "Falta um id do cliente!"]], 422);
+        } catch (\Exception $e) {
+            if (config('app.debug')) {
+                return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 500);
+            }
+            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação de ' . __FUNCTION__, 1010), 500);
+        }
+    }
+
+    public function criar(Request $request)
+    {
+        try {
+            $animalData = $request->all();
+            $this->animal->create($animalData);
+            return response()->json(['data' => ['msg' => "Animal criado com sucesso"]], 201);
+        } catch (\Exception $e) {
+            if ($e->getCode() == 'HY000') {
+                return response()->json(["data" => ["msg" => "Faltou o id do cliente ou o nome do animal", "code" => 1010]], 422);
+            }
+            if (config('app.debug')) {
+                return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 500);
+            }
+            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação de ' . __FUNCTION__, 1010), 500);
+        }
+    }
+
+    public function alterar(Request $request)
+    {
+        try {
+            $animalData = $request->all();
+            $animal_encontrado = $this->animal->find($animalData['id']);
+            $animal_encontrado->update($animalData);
+            return response()->json(['data' => ['msg' => "Animal alterado com sucesso"]], 201);
+        } catch (\Exception $e) {
+            if (config('app.debug')) {
+                return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 500);
+            }
+            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação  de ' . __FUNCTION__, 1010), 500);
+        }
+    }
+
+    public function deletar(Request $request)
+    {
+        /*
+        Ao deletar um animal, ele deletará todo o conteudo relacionado a esse cliente
+        como por exemplo as consultas referentes a esse animal
+        */
+        try {
+            // dd($request->all());
+            $animalData = $request->all();
+            $animal_encontrado = $this->animal->find($animalData['id']);
+            if (isset($animal_encontrado)) {
+                $animal_encontrado->delete($animalData);
+                return response()->json(['data' => ['msg' => "Animal " . $request['id'] . " deletado com sucesso"]], 200);
+            }
+            return response()->json(ApiError::errorMessage("Animal de id $animalData[id] nao encontrado", 404), 404);
         } catch (\Exception $e) {
             if (config('app.debug')) {
                 return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 500);

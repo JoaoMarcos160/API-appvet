@@ -28,4 +28,9 @@ class Animais extends Model
     {
         return $this->belongsTo(Clientes::class, 'cliente_id');
     }
+
+    public function consultas()
+    {
+        return $this->hasMany(Consultas::class, 'animal_id');
+    }
 }
