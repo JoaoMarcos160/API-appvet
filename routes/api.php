@@ -44,6 +44,15 @@ Route::namespace("API")->group(function () {
         Route::put("/", "AnimaisController@alterar")->name("alterar_animais");
         Route::delete("/", "AnimaisController@deletar")->name("deletar_animais");
     });
+    Route::prefix("consultas")->group(function () {
+        Route::get("/{id}", "ConsultasController@show")->name("unico_consultas");
+        Route::get("/", "ConsultasController@index")->name("index_consultas");
+        Route::post("/listar", "ConsultasController@listar_consultas")->name("listar_consultas");
+        Route::post("/buscar", "ConsultasController@buscar_consulta")->name("buscar_consulta");
+        Route::post("/", "ConsultasController@criar")->name("criar_consultas");
+        Route::put("/", "ConsultasController@alterar")->name("alterar_consultas");
+        Route::delete("/", "ConsultasController@deletar")->name("deletar_consultas");
+    });
 });
 
 Route::get("/ok", function () {

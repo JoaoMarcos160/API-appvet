@@ -77,6 +77,9 @@ class UsuariosController extends Controller
             if (config('app.debug')) {
                 return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 500);
             }
+            if ($e->getCode() == 22007) {
+                return response()->json(["data" => ["msg" => "Algum campo esta incorreto", "code" => 1010]], 422);
+            }
             return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação de ' . __FUNCTION__, 1010), 500);
         }
     }
@@ -98,7 +101,10 @@ class UsuariosController extends Controller
             if (config('app.debug')) {
                 return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 500);
             }
-            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação  de ' . __FUNCTION__, 1010), 500);
+            if ($e->getCode() == '22007') {
+                return response()->json(["data" => ["msg" => "Algum campo esta incorreto", "code" => 1010]], 422);
+            }
+            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação de ' . __FUNCTION__, 1010), 500);
         }
     }
 

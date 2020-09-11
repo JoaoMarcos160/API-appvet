@@ -50,6 +50,9 @@ class ClientesController extends Controller
             if (config('app.debug')) {
                 return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 500);
             }
+            if ($e->getCode() == '22007') {
+                return response()->json(["data" => ["msg" => "Algum campo esta incorreto", "code" => 1010]], 422);
+            }
             return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação de ' . __FUNCTION__, 1010), 500);
         }
     }
@@ -59,13 +62,22 @@ class ClientesController extends Controller
         try {
             $clienteData = $request->all();
             $cliente_encontrado = $this->cliente->find($clienteData['id']);
-            $cliente_encontrado->update($clienteData);
-            return response()->json(['data' => ['msg' => "Cliente alterado com sucesso"]], 201);
+            if (isset($cliente_encontrado)) {
+                $cliente_encontrado->update($clienteData);
+                return response()->json(['data' => ['msg' => "Cliente " . $clienteData['id'] . " alterado com sucesso!"]], 200);
+            }
+            return response()->json(ApiError::errorMessage("Cliente de id $clienteData[id] nao encontrado", 404), 404);
         } catch (\Exception $e) {
+            if ($e->getCode() == 'HY000') {
+                return response()->json(["data" => ["msg" => "Faltou o id do usuário ou o nome do cliente", "code" => 1010]], 422);
+            }
             if (config('app.debug')) {
                 return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 500);
             }
-            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação  de ' . __FUNCTION__, 1010), 500);
+            if ($e->getCode() == 22007) {
+                return response()->json(["data" => ["msg" => "Algum campo esta incorreto", "code" => 1010]], 422);
+            }
+            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação de ' . __FUNCTION__, 1010), 500);
         }
     }
 
@@ -81,7 +93,7 @@ class ClientesController extends Controller
             $cliente_encontrado = $this->cliente->find($clienteData['id']);
             if (isset($cliente_encontrado)) {
                 $cliente_encontrado->delete($clienteData);
-                return response()->json(['data' => ['msg' => "Cliente " . $request['id'] . " deletado com sucesso"]], 200);
+                return response()->json(['data' => ['msg' => "Cliente " . $clienteData['id'] . " deletado com sucesso"]], 200);
             }
             return response()->json(ApiError::errorMessage("Cliente de id $clienteData[id] nao encontrado", 404), 404);
         } catch (\Exception $e) {
