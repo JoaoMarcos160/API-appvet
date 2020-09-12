@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\API\ApiError;
+use App\API\ApiMessages;
 use App\Http\Controllers\Controller;
 use App\Usuarios;
 use Illuminate\Http\Request;
@@ -16,11 +17,21 @@ class UsuariosController extends Controller
         $this->usuario = $usuario;
     }
 
+    public function valida_token($token)
+    {
+        $result = TokensController::validar_token($token);
+        if (!$result) {
+            return false;
+            // return response()->json(["data" => ["msg" => ApiMessages::message(13)]], 422);
+        }
+        return true;
+    }
+
     public function index() //listava todos os usuarios
     {
         // $data = ['data' => $this->usuario->paginate(10)];
         // $data = ['data' => $this->usuario->all()];
-        $data = ['data' => "Coloque na URL o id do usuario! Ex.: /api/usuarios/25"];
+        $data = ['data' => ApiMessages::message(1)];
         return response()->json($data);
     }
 
@@ -34,7 +45,7 @@ class UsuariosController extends Controller
             if (config('app.debug')) {
                 return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 500);
             }
-            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação de ' . __FUNCTION__, 1010), 500);
+            return response()->json(ApiError::errorMessage(ApiMessages::message(2, __FUNCTION__), 1010), 500);
         }
     }
 
@@ -42,24 +53,32 @@ class UsuariosController extends Controller
     {
         // return response()->json(['data' => ['msg' => "sucesso"]], 201);
         try {
-            $usuarioData = $request->all();
-            $usuario_encontrado = Usuarios::select('login', 'senha')->where('login', request('login'))
+            // $usuarioData = $request->all();
+            $usuario_encontrado = Usuarios::select('id', 'login', 'senha')
+                ->where('login', request('login'))
                 ->get();
             // dd($usuario_encontrado);
             if ($usuario_encontrado->isEmpty()) {
-                return response()->json(['data' => ['msg' => 'Login não encontrado']], 404);
+                return response()->json(['data' => ['msg' => ApiMessages::message(3)]], 404);
             }
             if (Hash::check(request('senha'), $usuario_encontrado[0]->senha)) {
-                //colocar geração de token de autenticação aqui
-
-                return response()->json(['data' => ['msg' => 'Sucesso']], 200);
+                // print_r($usuario_encontrado[0]->id);
+                $controller = new TokensController();
+                $token_gerado = $controller->gerar_token($usuario_encontrado[0]->id);
+                return response()->json([
+                    'data' =>
+                    [
+                        'msg' => ApiMessages::message(4), //mensagem de sucesso
+                        'token' => $token_gerado,
+                    ]
+                ], 200);
             }
-            return response()->json(['data' => ['msg' => 'Senha incorreta']], 200);
+            return response()->json(['data' => ['msg' => ApiMessages::message(5)]], 200);
         } catch (\Exception $e) {
             if (config('app.debug')) {
                 return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 500);
             }
-            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação  de ' . __FUNCTION__, 1010), 500);
+            return response()->json(ApiError::errorMessage(ApiMessages::message(2, __FUNCTION__), 1010), 500);
         }
     }
 
@@ -69,18 +88,21 @@ class UsuariosController extends Controller
             $usuarioData = $request->all();
             $usuarioData['senha'] = Hash::make($usuarioData['senha']);
             $this->usuario->create($usuarioData);
-            return response()->json(['data' => ['msg' => "Usuario criado com sucesso"]], 201);
+            return response()->json(['data' => ['msg' => ApiMessages::message(6)]], 201);
         } catch (\Exception $e) {
             if ($e->getCode() == 23000) {
-                return response()->json(ApiError::errorMessage("Já existe um usuario com esse login", 422), 422);
+                return response()->json(ApiError::errorMessage(ApiMessages::message(12, "Usuario"), 422), 422);
+            }
+            if ($e->getCode() == 'HY000') {
+                return response()->json(ApiError::errorMessage(ApiMessages::message(8), 422), 422);
             }
             if (config('app.debug')) {
                 return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 500);
             }
             if ($e->getCode() == 22007) {
-                return response()->json(["data" => ["msg" => "Algum campo esta incorreto", "code" => 1010]], 422);
+                return response()->json(["data" => ["msg" => ApiMessages::message(8), "code" => 1010]], 422);
             }
-            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação de ' . __FUNCTION__, 1010), 500);
+            return response()->json(ApiError::errorMessage(ApiMessages::message(2, __FUNCTION__), 1010), 500);
         }
     }
 
@@ -88,23 +110,28 @@ class UsuariosController extends Controller
     {
         try {
             $usuarioData = $request->all();
-            $usuario_encontrado = $this->usuario->find($usuarioData['id']);
-            if (isset($usuarioData['senha'])) {
-                $usuarioData['senha'] = Hash::make($usuarioData['senha']);
+            if (isset($usuarioData['token'])) {
+                if ($this->valida_token(request('token'))) {
+                    $usuario_encontrado = $this->usuario->find($usuarioData['id']);
+                    if (isset($usuarioData['senha'])) {
+                        $usuarioData['senha'] = Hash::make($usuarioData['senha']);
+                    }
+                    $usuario_encontrado->update($usuarioData);
+                    return response()->json(['data' => ['msg' => ApiMessages::message(9)]], 201);
+                }
             }
-            $usuario_encontrado->update($usuarioData);
-            return response()->json(['data' => ['msg' => "Usuario alterado com sucesso"]], 201);
+            return response()->json(["data" => ["msg" => ApiMessages::message(13)]], 422);
         } catch (\Exception $e) {
-            if ($e->getCode() == 23000) {
-                return response()->json(ApiError::errorMessage("Já existe um usuario com esse login", 422), 422);
-            }
             if (config('app.debug')) {
                 return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 500);
             }
-            if ($e->getCode() == '22007') {
-                return response()->json(["data" => ["msg" => "Algum campo esta incorreto", "code" => 1010]], 422);
+            if ($e->getCode() == 23000) {
+                return response()->json(ApiError::errorMessage(ApiMessages::message(10), 422), 422);
             }
-            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação de ' . __FUNCTION__, 1010), 500);
+            if ($e->getCode() == '22007') {
+                return response()->json(["data" => ["msg" => ApiMessages::message(8), "code" => 1010]], 422);
+            }
+            return response()->json(ApiError::errorMessage(ApiMessages::message(2, __FUNCTION__), 1010), 500);
         }
     }
 
@@ -117,17 +144,22 @@ class UsuariosController extends Controller
         try {
             // dd($request->all());
             $usuarioData = $request->all();
-            $usuario_encontrado = $this->usuario->find($usuarioData['id']);
-            if (isset($usuario_encontrado)) {
-                $usuario_encontrado->delete($usuarioData);
-                return response()->json(['data' => ['msg' => "Usuario " . $request['id'] . " deletado com sucesso"]], 200);
+            if (isset($usuarioData['token'])) {
+                if ($this->valida_token(request('token'))) {
+                    $usuario_encontrado = $this->usuario->find($usuarioData['id']);
+                    if (isset($usuario_encontrado)) {
+                        $usuario_encontrado->delete($usuarioData);
+                        return response()->json(['data' => ['msg' => ApiMessages::message(11)]], 200);
+                    }
+                    return response()->json(ApiError::errorMessage(ApiMessages::message(12, "Usuario"), 404), 404);
+                }
             }
-            return response()->json(ApiError::errorMessage("Usuario de id $usuarioData[id] nao encontrado", 404), 404);
+            return response()->json(["data" => ["msg" => ApiMessages::message(13)]], 422);
         } catch (\Exception $e) {
             if (config('app.debug')) {
                 return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 500);
             }
-            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação de ' . __FUNCTION__, 1010), 500);
+            return response()->json(ApiError::errorMessage(ApiMessages::message(2, __FUNCTION__), 1010), 500);
         }
     }
 }

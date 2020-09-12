@@ -25,4 +25,9 @@ class Usuarios extends Model
     {
         return $this->hasMany(Clientes::class, 'usuario_id');
     }
+
+    public function tokens()
+    {
+        return $this->belongsTo(Tokem::class, 'usuario_id');
+    }
 }

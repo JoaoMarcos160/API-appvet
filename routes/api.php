@@ -53,6 +53,9 @@ Route::namespace("API")->group(function () {
         Route::put("/", "ConsultasController@alterar")->name("alterar_consultas");
         Route::delete("/", "ConsultasController@deletar")->name("deletar_consultas");
     });
+    // Route::prefix("token")->group(function () {
+    //     Route::post("/gerar", "TokensController@gerar_token")->name("gerar_token");
+    // });
 });
 
 Route::get("/ok", function () {
