@@ -32,14 +32,14 @@ class UsuariosController extends Controller
         // $data = ['data' => $this->usuario->paginate(10)];
         // $data = ['data' => $this->usuario->all()];
         $data = ['data' => ApiMessages::message(1)];
-        return response()->json($data);
+        return response()->json($data, 200);
     }
 
     public function show(Usuarios $id)
     {
         try {
             $data = ['data' => $id];
-            return \response()->json($data);
+            return \response()->json($data, 200);
             //Tratamento de usuario não encontrado colocado dentro de app\Exceptions\Handler.php
         } catch (\Exception $e) {
             if (config('app.debug')) {
@@ -59,7 +59,7 @@ class UsuariosController extends Controller
                 ->get();
             // dd($usuario_encontrado);
             if ($usuario_encontrado->isEmpty()) {
-                return response()->json(['data' => ['msg' => ApiMessages::message(3)]], 404);
+                return response()->json(['data' => ['msg' => ApiMessages::message(3)]], 200);
             }
             if (Hash::check(request('senha'), $usuario_encontrado[0]->senha)) {
                 // print_r($usuario_encontrado[0]->id);
@@ -86,18 +86,25 @@ class UsuariosController extends Controller
     {
         try {
             $usuarioData = $request->all();
-            $usuarioData['senha'] = Hash::make($usuarioData['senha']);
-            $this->usuario->create($usuarioData);
-            return response()->json(['data' => ['msg' => ApiMessages::message(6)]], 201);
+            $logins_encontrados = Usuarios::select('id')
+                ->where('login', request('login'))
+                ->get();
+            if ($logins_encontrados->isEmpty()) {
+                $usuarioData['senha'] = Hash::make($usuarioData['senha']);
+                $this->usuario->create($usuarioData);
+                return response()->json(['data' => ['msg' => ApiMessages::message(6)]], 201);
+            } else {
+                return response()->json(['data' => ['msg' => ApiMessages::message(7), 'code' => 1020]], 200);
+            }
         } catch (\Exception $e) {
+            if (config('app.debug')) {
+                return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 500);
+            }
             if ($e->getCode() == 23000) {
                 return response()->json(ApiError::errorMessage(ApiMessages::message(12, "Usuario"), 422), 422);
             }
             if ($e->getCode() == 'HY000') {
                 return response()->json(ApiError::errorMessage(ApiMessages::message(8), 422), 422);
-            }
-            if (config('app.debug')) {
-                return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 500);
             }
             if ($e->getCode() == 22007) {
                 return response()->json(["data" => ["msg" => ApiMessages::message(8), "code" => 1010]], 422);
@@ -113,6 +120,9 @@ class UsuariosController extends Controller
             if (isset($usuarioData['token'])) {
                 if ($this->valida_token(request('token'))) {
                     $usuario_encontrado = $this->usuario->find($usuarioData['id']);
+                    if ($usuario_encontrado == null) {
+                        return response()->json(['data' => ['msg' => ApiMessages::message(12, "Usuario")]], 201);
+                    }
                     if (isset($usuarioData['senha'])) {
                         $usuarioData['senha'] = Hash::make($usuarioData['senha']);
                     }
