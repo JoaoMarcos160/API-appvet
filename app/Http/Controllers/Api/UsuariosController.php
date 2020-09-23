@@ -68,6 +68,7 @@ class UsuariosController extends Controller
                 return response()->json([
                     'data' =>
                     [
+                        'id' => $usuario_encontrado[0]->id,
                         'msg' => ApiMessages::message(4), //mensagem de sucesso
                         'token' => $token_gerado,
                     ]
