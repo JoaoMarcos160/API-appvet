@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Animais;
 use App\API\ApiError;
+use App\API\ApiMessages;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -180,11 +181,11 @@ class AnimaisController extends Controller
                         // }
 
                         if ($animais_encontrados->isEmpty()) {
-                            return response()->json(['data' => ["msg" => 'Nenhum animal encontrado']], 404);
+                            return response()->json(['data' => 'Nenhum animal encontrado'], 404);
                         }
                         return response()->json(['data' => $animais_encontrados], 200);
                     }
-                    return \response()->json(["data" => ['msg' => "Falta um id do cliente!"]], 422);
+                    return \response()->json(["data" => ['msg' => ApiMessages::message(8)]], 422);
                 }
             }
             return response()->json(["data" => ["msg" => ApiMessages::message(13)]], 422);
@@ -203,19 +204,19 @@ class AnimaisController extends Controller
             if (isset($animalData['token'])) {
                 if ($this->valida_token(request('token'))) {
                     $this->animal->create($animalData);
-                    return response()->json(['data' => ['msg' => "Animal criado com sucesso"]], 201);
+                    return response()->json(['data' => ['msg' => ApiMessages::message(6)]], 201);
                 }
             }
             return response()->json(["data" => ["msg" => ApiMessages::message(13)]], 422);
         } catch (\Exception $e) {
             if ($e->getCode() == 'HY000') {
-                return response()->json(["data" => ["msg" => "Faltou o id do cliente ou o nome do animal", "code" => 1010]], 422);
+                return response()->json(["data" => ["msg" => ApiMessages::message(8), "code" => 1010]], 422);
             }
             if (config('app.debug')) {
                 return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 500);
             }
             if ($e->getCode() == '22007') {
-                return response()->json(["data" => ["msg" => "Algum campo esta incorreto", "code" => 1010]], 422);
+                return response()->json(["data" => ["msg" => ApiMessages::message(8), "code" => 1010]], 422);
             }
             if (config('app.debug')) {
                 return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 500);
@@ -233,18 +234,18 @@ class AnimaisController extends Controller
                     $animal_encontrado = $this->animal->find($animalData['id']);
                     if (isset($animal_encontrado)) {
                         $animal_encontrado->update($animalData);
-                        return response()->json(['data' => ['msg' => "Animal alterado com sucesso"]], 201);
+                        return response()->json(['data' => ['msg' => ApiMessages::message(9)]], 201);
                     }
-                    return response()->json(ApiError::errorMessage("Animal de id $animalData[id] nao encontrado", 404), 404);
+                    return response()->json(ApiError::errorMessage(ApiMessages::message(12, "Animal"), 404), 404);
                 }
             }
             return response()->json(["data" => ["msg" => ApiMessages::message(13)]], 422);
         } catch (\Exception $e) {
             if ($e->getCode() == 'HY000') {
-                return response()->json(["data" => ["msg" => "Faltou o id do cliente ou o nome do animal", "code" => 1010]], 422);
+                return response()->json(["data" => ["msg" => ApiMessages::message(8), "code" => 1010]], 422);
             }
             if ($e->getCode() == 22007) {
-                return response()->json(["data" => ["msg" => "Algum campo esta incorreto", "code" => 1010]], 422);
+                return response()->json(["data" => ["msg" => ApiMessages::message(8), "code" => 1010]], 422);
             }
             if (config('app.debug')) {
                 return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 500);
@@ -267,9 +268,9 @@ class AnimaisController extends Controller
                     $animal_encontrado = $this->animal->find(request('id'));
                     if (isset($animal_encontrado)) {
                         $animal_encontrado->delete($animalData);
-                        return response()->json(['data' => ['msg' => "Animal " . $request['id'] . " deletado com sucesso"]], 200);
+                        return response()->json(['data' => ['msg' =>  ApiMessages::message(11)]], 200);
                     }
-                    return response()->json(ApiError::errorMessage("Animal de id $animalData[id] nao encontrado", 404), 404);
+                    return response()->json(ApiError::errorMessage(ApiMessages::message(12, "Animal"), 404), 404);
                 }
             }
             return response()->json(["data" => ["msg" => ApiMessages::message(13)]], 422);

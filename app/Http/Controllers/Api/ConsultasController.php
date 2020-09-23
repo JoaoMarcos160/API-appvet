@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\API\ApiError;
+use App\API\ApiMessages;
 use App\Consultas;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -21,6 +22,16 @@ class ConsultasController extends Controller
         // $data = ['data' => "Coloque na URL o id da consulta! Ex.: /api/consultas/25"];
         $data = ['data' => 'Você precisa estar logado!'];
         return response()->json($data);
+    }
+
+    public function valida_token($token)
+    {
+        $result = TokensController::validar_token($token);
+        if (!$result) {
+            return false;
+            // return response()->json(["data" => ["msg" => ApiMessages::message(13)]], 422);
+        }
+        return true;
     }
 
     public function show(Consultas $id)
@@ -47,7 +58,7 @@ class ConsultasController extends Controller
         */
         try {
             $consultaData = $request->all();
-            if (isset($animalData['token'])) {
+            if (isset($consultaData['token'])) {
                 if ($this->valida_token(request('token'))) {
                     if (isset($consultaData['animal_id'])) {
                         $consultas_encontradas = Consultas::where('animal_id', request('animal_id'))
@@ -58,7 +69,7 @@ class ConsultasController extends Controller
                         }
                         return response()->json(['data' => 'Nenhuma consulta encontrada'], 200);
                     }
-                    return response()->json(['data' => ['msg' => 'Falta um id do animal']], 422);
+                    return response()->json(['data' => ['msg' => ApiMessages::message(8)]], 422);
                 }
             }
             return response()->json(["data" => ["msg" => ApiMessages::message(13)]], 422);
@@ -74,7 +85,7 @@ class ConsultasController extends Controller
     {
         try {
             $consultaData = $request->all();
-            if (isset($animalData['token'])) {
+            if (isset($consultaData['token'])) {
                 if ($this->valida_token(request('token'))) {
                     if (isset($consultaData['animal_id'])) {
                         //construindo a query
@@ -145,7 +156,7 @@ class ConsultasController extends Controller
                         }
                         return response()->json(['data' => $consultas_encontradas], 200);
                     }
-                    return \response()->json(["data" => ['msg' => "Falta um id do animal!"]], 422);
+                    return \response()->json(["data" => ['msg' => ApiMessages::message(8)]], 422);
                 }
             }
             return response()->json(["data" => ["msg" => ApiMessages::message(13)]], 422);
@@ -161,22 +172,22 @@ class ConsultasController extends Controller
     {
         try {
             $consultaData = $request->all();
-            if (isset($animalData['token'])) {
+            if (isset($consultaData['token'])) {
                 if ($this->valida_token(request('token'))) {
                     $this->consulta->create($consultaData);
-                    return response()->json(['data' => ['msg' => "Consulta criada com sucesso"]], 201);
+                    return response()->json(['data' => ['msg' => ApiMessages::message(6)]], 201);
                 }
             }
             return response()->json(["data" => ["msg" => ApiMessages::message(13)]], 422);
         } catch (\Exception $e) {
-            if ($e->getCode() == 'HY000') {
-                return response()->json(["data" => ["msg" => "Faltou o id do animal", "code" => 1010]], 422);
-            }
             if (config('app.debug')) {
                 return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 500);
             }
+            if ($e->getCode() == 'HY000') {
+                return response()->json(["data" => ["msg" =>  ApiMessages::message(8), "code" => 1010]], 422);
+            }
             if ($e->getCode() == '22007') {
-                return response()->json(["data" => ["msg" => "Algum campo esta incorreto", "code" => 1010]], 422);
+                return response()->json(["data" => ["msg" =>  ApiMessages::message(8), "code" => 1010]], 422);
             }
             if (config('app.debug')) {
                 return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 500);
@@ -189,26 +200,26 @@ class ConsultasController extends Controller
     {
         try {
             $consultaData = $request->all();
-            if (isset($animalData['token'])) {
+            if (isset($consultaData['token'])) {
                 if ($this->valida_token(request('token'))) {
                     $consulta_encontrada = $this->consulta->find($consultaData['id']);
                     if (isset($consulta_encontrada)) {
                         $consulta_encontrada->update($consultaData);
-                        return response()->json(['data' => ['msg' => "Consulta alterado com sucesso"]], 201);
+                        return response()->json(['data' => ['msg' =>  ApiMessages::message(9)]], 201);
                     }
-                    return response()->json(ApiError::errorMessage("Consulta de id $consultaData[id] nao encontrado", 404), 404);
+                    return response()->json(ApiError::errorMessage(ApiMessages::message(12, "Consulta"), 404), 404);
                 }
             }
             return response()->json(["data" => ["msg" => ApiMessages::message(13)]], 422);
         } catch (\Exception $e) {
             if ($e->getCode() == 'HY000') {
-                return response()->json(["data" => ["msg" => "Faltou o id do animal", "code" => 1010]], 422);
+                return response()->json(["data" => ["msg" =>  ApiMessages::message(8), "code" => 1010]], 422);
             }
             if (config('app.debug')) {
                 return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 500);
             }
             if ($e->getCode() == 22007) {
-                return response()->json(["data" => ["msg" => "Algum campo esta incorreto", "code" => 1010]], 422);
+                return response()->json(["data" => ["msg" => ApiMessages::message(8), "code" => 1010]], 422);
             }
             return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação de ' . __FUNCTION__, 1010), 500);
         }
@@ -219,14 +230,14 @@ class ConsultasController extends Controller
         try {
             // dd($request->all());
             $consultaData = $request->all();
-            if (isset($animalData['token'])) {
+            if (isset($consultaData['token'])) {
                 if ($this->valida_token(request('token'))) {
                     $consulta_encontrada = $this->consulta->find(request('id'));
                     if (isset($consulta_encontrada)) {
                         $consulta_encontrada->delete($consultaData);
-                        return response()->json(['data' => ['msg' => "Consulta " . $consultaData['id'] . " deletada com sucesso"]], 200);
+                        return response()->json(['data' => ['msg' =>  ApiMessages::message(11)]], 200);
                     }
-                    return response()->json(ApiError::errorMessage("Consulta de id $consultaData[id] nao encontrado", 404), 404);
+                    return response()->json(ApiError::errorMessage(ApiMessages::message(12, "Consulta"), 404), 404);
                 }
             }
             return response()->json(["data" => ["msg" => ApiMessages::message(13)]], 422);
