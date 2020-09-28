@@ -92,8 +92,14 @@ class UsuariosController extends Controller
                 ->get();
             if ($logins_encontrados->isEmpty()) {
                 $usuarioData['senha'] = Hash::make($usuarioData['senha']);
-                $this->usuario->create($usuarioData);
-                return response()->json(['data' => ['msg' => ApiMessages::message(6)]], 201);
+                $usuario_criado = $this->usuario->create($usuarioData);
+                $controller = new TokensController();
+                $token_gerado = $controller->gerar_token($usuario_criado->id);
+                return response()->json(['data' => [
+                    'id' => $usuario_criado->id,
+                    'token' => $token_gerado,
+                    'msg' => ApiMessages::message(6)
+                ]], 201);
             } else {
                 return response()->json(['data' => ['msg' => ApiMessages::message(7), 'code' => 1020]], 200);
             }
