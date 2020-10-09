@@ -204,6 +204,27 @@ class ClientesController extends Controller
                             }
                         );
                         $query->when(
+                            isset($clienteData['numero']),
+                            function ($q) {
+                                $numero = request('numero');
+                                return $q->where('numero', 'like', "%$numero%");
+                            }
+                        );
+                        $query->when(
+                            isset($clienteData['complemento']),
+                            function ($q) {
+                                $complemento = request('complemento');
+                                return $q->where('complemento', 'like', "%$complemento%");
+                            }
+                        );
+                        $query->when(
+                            isset($clienteData['bairro']),
+                            function ($q) {
+                                $bairro = request('bairro');
+                                return $q->where('bairro', 'like', "%$bairro%");
+                            }
+                        );
+                        $query->when(
                             isset($clienteData['cidade']),
                             function ($q) {
                                 $cidade = request('cidade');

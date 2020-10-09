@@ -21,11 +21,14 @@ class CriaTabelaClientes extends Migration
             $table->string('cpf')->nullable();
             $table->string('telefone')->nullable();
             $table->string('endereco')->nullable();
+            $table->string('numero')->nullable();
+            $table->string('bairro')->nullable();
+            $table->string('complemento')->nullable();
             $table->string('cidade')->nullable();
             $table->string('estado')->nullable();
             $table->string('cep')->nullable();
-            $table->timestamp('dt_nasc')->nullable();
-            $table->string('observacao')->nullable();
+            $table->dateTime('dt_nasc')->nullable();
+            $table->text('observacao')->nullable();
             $table->string('email')->nullable();
             $table->timestamps();
         });

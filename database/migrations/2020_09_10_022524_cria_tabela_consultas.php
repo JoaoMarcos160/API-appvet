@@ -17,7 +17,7 @@ class CriaTabelaConsultas extends Migration
             $table->increments('id');
             $table->integer('animal_id')->unsigned();
             $table->foreign('animal_id')->references('id')->on('animais')->cascadeOnDelete()->cascadeOnUpdate(); //relacionamento aqui
-            $table->string('observacao')->nullable();
+            $table->text('observacao')->nullable();
             $table->string('doenca')->nullable();
             $table->string('recomendacao')->nullable();
             $table->double('valor_cobrado')->nullable();
