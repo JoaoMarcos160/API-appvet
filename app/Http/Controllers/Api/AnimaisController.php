@@ -7,6 +7,7 @@ use App\API\ApiError;
 use App\API\ApiMessages;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class AnimaisController extends Controller
 {
@@ -203,6 +204,17 @@ class AnimaisController extends Controller
             $animalData = $request->all();
             if (isset($animalData['token'])) {
                 if ($this->valida_token(request('token'))) {
+                    $foto_animal = $request->file('foto_animal');
+                    if ($foto_animal) {
+                        if ($foto_animal->isValid()) {
+                            // $result = Storage::disk('s3')->put("imagens", $foto_animal, 'public');
+                            $result = $foto_animal->store('imagens', 's3');
+                            //Ver aqui e fazer upar as imagens de froma publica
+                            $animalData['caminho_foto'] = "https://appvet.s3-sa-east-1.amazonaws.com/" . $result;
+                        } else {
+                            return response()->json(['data' => ['msg' => ApiMessages::message(14)]], 400);
+                        }
+                    }
                     $this->animal->create($animalData);
                     return response()->json(['data' => ['msg' => ApiMessages::message(6)]], 201);
                 }

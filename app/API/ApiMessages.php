@@ -50,6 +50,15 @@ class ApiMessages
             case 13:
                 $message = "Token invalido";
                 break;
+            case 14:
+                $message = "Erro ao inserir imagem!";
+                break;
+            case 15:
+                $message = "Extensão inválida!";
+                break;
+            case 16:
+                $message = "Tamanho da imagem inválido!";
+                break;
             default:
                 $message = "Erro desconhecido";
                 break;
