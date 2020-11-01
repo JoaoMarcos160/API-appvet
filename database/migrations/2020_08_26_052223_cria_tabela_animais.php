@@ -18,7 +18,7 @@ class CriaTabelaAnimais extends Migration
             $table->string('nome_animal');
             $table->integer('cliente_id')->unsigned();
             $table->foreign('cliente_id')->references('id')->on('clientes')->cascadeOnDelete()->cascadeOnUpdate(); //relacionamento aqui
-            $table->timestamp('dt_nasc')->nullable();
+            $table->dateTime('dt_nasc')->nullable();
             $table->text('observacao')->nullable();
             $table->string('microchip')->nullable();
             $table->string('tag')->nullable();

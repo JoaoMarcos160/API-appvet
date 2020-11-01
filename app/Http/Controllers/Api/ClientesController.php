@@ -54,8 +54,8 @@ class ClientesController extends Controller
             $clienteData = $request->all();
             if (isset($clienteData['token'])) {
                 if ($this->valida_token(request('token'))) {
-                    $this->cliente->create($clienteData);
-                    return response()->json(['data' => ['msg' => ApiMessages::message(6)]], 201);
+                    $cliente_criado = $this->cliente->create($clienteData);
+                    return response()->json(['data' => ['id' => $cliente_criado->id, 'msg' => ApiMessages::message(6)]], 201);
                 }
             }
             return response()->json(["data" => ["msg" => ApiMessages::message(13)]], 422);
@@ -151,7 +151,7 @@ class ClientesController extends Controller
                         if (!$clientes_encontrados->isEmpty()) {
                             return response()->json(['data' => $clientes_encontrados], 200);
                         }
-                        return response()->json(['data' => 'Nenhum cliente encontrado'], 200);
+                        return response()->json(['data' => ['msg' => 'Nenhum cliente encontrado']], 200);
                     }
                     return \response()->json(["data" => ['msg' => ApiMessages::message(8)]], 422);
                 }

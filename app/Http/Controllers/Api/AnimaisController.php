@@ -204,6 +204,9 @@ class AnimaisController extends Controller
             $animalData = $request->all();
             if (isset($animalData['token'])) {
                 if ($this->valida_token(request('token'))) {
+                    $animal_antes = $animalData;
+                    $animal_antes['foto_animal'] = null;
+                    $animal_criado = $this->animal->create($animal_antes);
                     $foto_animal = $request->file('foto_animal');
                     if ($foto_animal) {
                         if ($foto_animal->isValid()) {
@@ -212,8 +215,8 @@ class AnimaisController extends Controller
                         } else {
                             return response()->json(['data' => ['msg' => ApiMessages::message(14)]], 400);
                         }
+                        $animal_criado->update($animalData);
                     }
-                    $this->animal->create($animalData);
                     return response()->json(['data' => ['msg' => ApiMessages::message(6)]], 201);
                 }
             }
