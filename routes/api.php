@@ -17,7 +17,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::namespace("API")->group(function () {
+Route::namespace("Api")->group(function () {
     Route::prefix("usuarios")->group(function () {
         Route::get("/{id}", "UsuariosController@show")->name("unico_usuario");
         Route::get("/", "UsuariosController@index")->name("index_usuarios");
