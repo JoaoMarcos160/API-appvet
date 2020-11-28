@@ -13,10 +13,6 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 Route::namespace("Api")->group(function () {
     Route::prefix("usuarios")->group(function () {
         Route::get("/{id}", "UsuariosController@show")->name("unico_usuario");
@@ -53,12 +49,10 @@ Route::namespace("Api")->group(function () {
         Route::put("/", "ConsultasController@alterar")->name("alterar_consultas");
         Route::delete("/", "ConsultasController@deletar")->name("deletar_consultas");
     });
-    // Route::prefix("token")->group(function () {
-    //     Route::post("/gerar", "TokensController@gerar_token")->name("gerar_token");
-    // });
-});
-
-Route::get("/ok", function () {
-    //função só pra conferir se a api está online
-    return ["status" => true];
+    Route::prefix("ok")->group(function () {
+        Route::get("/", function () {
+            //função só pra conferir se a api está online
+            return response()->json(["status" => true]);
+        })->name("ok");
+    });
 });
