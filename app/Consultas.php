@@ -15,7 +15,6 @@ class Consultas extends Model
         'valor_cobrado',
         'created_at',
         'updated_at',
-
     ];
 
     protected $table = 'consultas';

@@ -19,7 +19,7 @@ class TokensController extends Controller
     {
         try {
             $tokenData['usuario_id'] = $usuario_id;
-            $tokenData['tokem'] = bin2hex(random_bytes(17));
+            $tokenData['tokem'] = md5(bin2hex(random_bytes(17)));
             $result = Tokem::select('id')->where('usuario_id', '=', $usuario_id)->limit(1)->get();
             if ($result->isEmpty()) {
                 Tokem::create($tokenData);
@@ -30,9 +30,9 @@ class TokensController extends Controller
             }
             return $tokenData['tokem'];
         } catch (\Exception $e) {
-            // if (config('app.debug')) {
-            //     return response()->json(ApiError::errorMessage($e->getMessage(), $e->getCode()), 500);
-            // }
+            if (config('app.debug')) {
+                return response()->json(ApiError::errorMessage($e->getMessage(), $e->getCode()), 500);
+            }
             return "Falha ao gerar token";
             if ($e->getCode() == 23000) {
                 return response()->json(ApiError::errorMessage(ApiMessages::message(12, "Usuario"), 422), 422);
@@ -41,7 +41,7 @@ class TokensController extends Controller
         }
     }
 
-    public static function validar_token($token)
+    public static function validar_token($token, $usuario_id)
     {
         try {
             $result = Tokem::select('tokem')

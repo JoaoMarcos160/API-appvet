@@ -24,9 +24,9 @@ class ConsultasController extends Controller
         return response()->json($data);
     }
 
-    public function valida_token($token)
+    public function valida_token($token, $usuario_id)
     {
-        $result = TokensController::validar_token($token);
+        $result = TokensController::validar_token($token, $usuario_id);
         if (!$result) {
             return false;
             // return response()->json(["data" => ["msg" => ApiMessages::message(13)]], 422);
@@ -59,7 +59,7 @@ class ConsultasController extends Controller
         try {
             $consultaData = $request->all();
             if (isset($consultaData['token'])) {
-                if ($this->valida_token(request('token'))) {
+                if ($this->valida_token(request('token'), request('usuario_id'))) {
                     if (isset($consultaData['animal_id'])) {
                         $consultas_encontradas = Consultas::where('animal_id', request('animal_id'))
                             ->orderByDesc('created_at')
@@ -86,7 +86,7 @@ class ConsultasController extends Controller
         try {
             $consultaData = $request->all();
             if (isset($consultaData['token'])) {
-                if ($this->valida_token(request('token'))) {
+                if ($this->valida_token(request('token'), request('usuario_id'))) {
                     if (isset($consultaData['animal_id'])) {
                         //construindo a query
                         $query = Consultas::query();
@@ -173,7 +173,7 @@ class ConsultasController extends Controller
         try {
             $consultaData = $request->all();
             if (isset($consultaData['token'])) {
-                if ($this->valida_token(request('token'))) {
+                if ($this->valida_token(request('token'), request('usuario_id'))) {
                     $this->consulta->create($consultaData);
                     return response()->json(['data' => ['msg' => ApiMessages::message(6)]], 201);
                 }
@@ -201,7 +201,7 @@ class ConsultasController extends Controller
         try {
             $consultaData = $request->all();
             if (isset($consultaData['token'])) {
-                if ($this->valida_token(request('token'))) {
+                if ($this->valida_token(request('token'), request('usuario_id'))) {
                     $consulta_encontrada = $this->consulta->find($consultaData['id']);
                     if (isset($consulta_encontrada)) {
                         $consulta_encontrada->update($consultaData);
@@ -231,7 +231,7 @@ class ConsultasController extends Controller
             // dd($request->all());
             $consultaData = $request->all();
             if (isset($consultaData['token'])) {
-                if ($this->valida_token(request('token'))) {
+                if ($this->valida_token(request('token'), request('usuario_id'))) {
                     $consulta_encontrada = $this->consulta->find(request('id'));
                     if (isset($consulta_encontrada)) {
                         $consulta_encontrada->delete($consultaData);

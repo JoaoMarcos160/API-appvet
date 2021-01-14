@@ -26,9 +26,9 @@ class AnimaisController extends Controller
         return response()->json($data);
     }
 
-    public function valida_token($token)
+    public function valida_token($token, $usuario_id)
     {
-        $result = TokensController::validar_token($token);
+        $result = TokensController::validar_token($token, $usuario_id);
         if (!$result) {
             return false;
             // return response()->json(["data" => ["msg" => ApiMessages::message(13)]], 422);
@@ -61,7 +61,7 @@ class AnimaisController extends Controller
         try {
             $animalData = $request->all();
             if (isset($animalData['token'])) {
-                if ($this->valida_token(request('token'))) {
+                if ($this->valida_token(request('token'), request('usuario_id'))) {
                     if (isset($animalData['cliente_id'])) {
                         $animais_encontrados = Animais::where('cliente_id', request('cliente_id'))
                             ->orderBy('nome_animal')
@@ -88,7 +88,7 @@ class AnimaisController extends Controller
         try {
             $animalData = $request->all();
             if (isset($animalData['token'])) {
-                if ($this->valida_token(request('token'))) {
+                if ($this->valida_token(request('token'), request('usuario_id'))) {
                     if (isset($animalData['cliente_id'])) {
                         //construindo a query
                         $query = Animais::query();
@@ -203,7 +203,7 @@ class AnimaisController extends Controller
         try {
             $animalData = $request->all();
             if (isset($animalData['token'])) {
-                if ($this->valida_token(request('token'))) {
+                if ($this->valida_token(request('token'), request('usuario_id'))) {
                     $animal_antes = $animalData;
                     $animal_antes['foto_animal'] = null;
                     $animal_criado = $this->animal->create($animal_antes);
@@ -243,7 +243,7 @@ class AnimaisController extends Controller
         try {
             $animalData = $request->all();
             if (isset($animalData['token'])) {
-                if ($this->valida_token(request('token'))) {
+                if ($this->valida_token(request('token'), request('usuario_id'))) {
                     $animal_encontrado = $this->animal->find($animalData['id']);
                     if (isset($animal_encontrado)) {
                         $animal_encontrado->update($animalData);
@@ -277,7 +277,7 @@ class AnimaisController extends Controller
             // dd($request->all());
             $animalData = $request->all();
             if (isset($animalData['token'])) {
-                if ($this->valida_token(request('token'))) {
+                if ($this->valida_token(request('token'), request('usuario_id'))) {
                     $animal_encontrado = $this->animal->find(request('id'));
                     if (isset($animal_encontrado)) {
                         $animal_encontrado->delete($animalData);
