@@ -25,9 +25,9 @@ class ClientesController extends Controller
         return response()->json($data);
     }
 
-    public function valida_token($token)
+    public function valida_token($token, $usuario_id)
     {
-        $result = TokensController::validar_token($token);
+        $result = TokensController::validar_token($token, $usuario_id);
         if (!$result) {
             return false;
             // return response()->json(["data" => ["msg" => ApiMessages::message(13)]], 422);
@@ -53,7 +53,7 @@ class ClientesController extends Controller
         try {
             $clienteData = $request->all();
             if (isset($clienteData['token'])) {
-                if ($this->valida_token(request('token'))) {
+                if ($this->valida_token(request('token'), request('usuario_id'))) {
                     $cliente_criado = $this->cliente->create($clienteData);
                     return response()->json(['data' => ['id' => $cliente_criado->id, 'msg' => ApiMessages::message(6)]], 201);
                 }
@@ -78,7 +78,7 @@ class ClientesController extends Controller
         try {
             $clienteData = $request->all();
             if (isset($clienteData['token'])) {
-                if ($this->valida_token(request('token'))) {
+                if ($this->valida_token(request('token'), request('usuario_id'))) {
                     $cliente_encontrado = $this->cliente->find($clienteData['id']);
                     if (isset($cliente_encontrado)) {
                         $cliente_encontrado->update($clienteData);
@@ -112,7 +112,7 @@ class ClientesController extends Controller
             // dd($request->all());
             $clienteData = $request->all();
             if (isset($clienteData['token'])) {
-                if ($this->valida_token(request('token'))) {
+                if ($this->valida_token(request('token'), request('usuario_id'))) {
                     $cliente_encontrado = $this->cliente->find($clienteData['id']);
                     if (isset($cliente_encontrado)) {
                         $cliente_encontrado->delete($clienteData);
@@ -142,7 +142,7 @@ class ClientesController extends Controller
         try {
             $clienteData = $request->all();
             if (isset($clienteData['token'])) {
-                if ($this->valida_token(request('token'))) {
+                if ($this->valida_token(request('token'), request('usuario_id'))) {
                     if (isset($clienteData['usuario_id'])) {
                         $clientes_encontrados = Clientes::where('usuario_id', request('usuario_id'))
                             ->orderBy('nome')
@@ -170,7 +170,7 @@ class ClientesController extends Controller
         try {
             $clienteData = $request->all();
             if (isset($clienteData['token'])) {
-                if ($this->valida_token(request('token'))) {
+                if ($this->valida_token(request('token'), request('usuario_id'))) {
                     if (isset($clienteData['usuario_id'])) {
                         //construindo a query
                         $query = Clientes::query();
