@@ -42,7 +42,7 @@ class ClientesController extends Controller
             return response()->json($data);
         } catch (\Exception $e) {
             if (config('app.debug')) {
-                return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 500);
+                return response()->json(ApiError::errorMessage($e->getMessage(), $e->getCode()), 500);
             }
             return response()->json(ApiError::errorMessage(ApiMessages::message(2, __FUNCTION__), 1010), 500);
         }
@@ -60,14 +60,8 @@ class ClientesController extends Controller
             }
             return response()->json(["data" => ["msg" => ApiMessages::message(13)]], 422);
         } catch (\Exception $e) {
-            if ($e->getCode() == 'HY000') {
-                return response()->json(["data" => ["msg" => ApiMessages::message(8), "code" => 1010]], 422);
-            }
             if (config('app.debug')) {
                 return response()->json(ApiError::errorMessage($e->getMessage(), 1010), 500);
-            }
-            if ($e->getCode() == '22007') {
-                return response()->json(["data" => ["msg" => ApiMessages::message(8), "code" => 1010]], 422);
             }
             return response()->json(ApiError::errorMessage(ApiMessages::message(2, __FUNCTION__), 1010), 500);
         }
@@ -77,12 +71,16 @@ class ClientesController extends Controller
     {
         try {
             $clienteData = $request->all();
+            ////////////////////////// não estão chegando os parametros para essa rota, falta conferir o pq
+            if ($clienteData == []) {
+                return response()->json(ApiError::errorMessage("Sem dados enviados", 404), 404);
+            }
             if (isset($clienteData['token'])) {
                 if ($this->valida_token(request('token'), request('usuario_id'))) {
                     $cliente_encontrado = $this->cliente->find($clienteData['id']);
                     if (isset($cliente_encontrado)) {
                         $cliente_encontrado->update($clienteData);
-                        return response()->json(['data' => ['msg' => ApiMessages::message(9)]], 200);
+                        return response()->json(['data' => ['msg' => ApiMessages::message(9)]], 201);
                     }
                     return response()->json(ApiError::errorMessage(ApiMessages::message(12, "Cliente"), 404), 404);
                 }

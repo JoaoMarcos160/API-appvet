@@ -15,10 +15,10 @@ class ApiMessages
                 $message = "Voce precisa estar logado";
                 break;
             case 2:
-                $message = $additional_information == null ? "Houve um erro ao realizar alguma operacao" : "Houve um erro ao realizar a operação de " . $additional_information;
+                $message = $additional_information == null ? "Houve um erro ao realizar alguma operacao" : "Houve um erro ao realizar a operacao de " . $additional_information;
                 break;
             case 3:
-                $message = "Login não encontrado";
+                $message = "Login nao encontrado";
                 break;
             case 4:
                 $message = "Sucesso";
@@ -30,7 +30,7 @@ class ApiMessages
                 $message = "Criado com sucesso";
                 break;
             case 7:
-                $message = "Já existe um usuario com esse login";
+                $message = "Ja existe um usuario com esse login";
                 break;
             case 8:
                 $message = "Algum campo esta incorreto";
@@ -39,13 +39,13 @@ class ApiMessages
                 $message = "Alterado com sucesso";
                 break;
             case 10:
-                $message = "Já existe um usuario com esse login";
+                $message = "Ja existe um usuario com esse login";
                 break;
             case 11:
                 $message = "Deletado com sucesso";
                 break;
             case 12:
-                $message = $additional_information == null ? "Não encontrado" : $additional_information . " não encontrado";
+                $message = $additional_information == null ? "Nao encontrado" : $additional_information . " nao encontrado";
                 break;
             case 13:
                 $message = "Token invalido";
@@ -54,10 +54,10 @@ class ApiMessages
                 $message = "Erro ao inserir imagem!";
                 break;
             case 15:
-                $message = "Extensão inválida!";
+                $message = "Extensao invalida!";
                 break;
             case 16:
-                $message = "Tamanho da imagem inválido!";
+                $message = "Tamanho da imagem invalido!";
                 break;
             default:
                 $message = "Erro desconhecido";

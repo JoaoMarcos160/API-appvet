@@ -4,11 +4,11 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Tokem extends Model
+class Token extends Model
 {
     protected $fillable = [
         'id',
-        'tokem',
+        'token',
         'usuario_id',
         'created_at',
         'updated_at',

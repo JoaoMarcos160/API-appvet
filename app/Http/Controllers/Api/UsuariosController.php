@@ -17,9 +17,9 @@ class UsuariosController extends Controller
         $this->usuario = $usuario;
     }
 
-    public function valida_token($token)
+    public function valida_token($token, $usuario_id)
     {
-        $result = TokensController::validar_token($token);
+        $result = TokensController::validar_token($token, $usuario_id);
         if (!$result) {
             return false;
             // return response()->json(["data" => ["msg" => ApiMessages::message(13)]], 422);
@@ -49,7 +49,7 @@ class UsuariosController extends Controller
         }
     }
 
-    public function login(Request $request)
+    public function login()
     {
         // return response()->json(['data' => ['msg' => "sucesso"]], 201);
         try {
@@ -125,7 +125,7 @@ class UsuariosController extends Controller
         try {
             $usuarioData = $request->all();
             if (isset($usuarioData['token'])) {
-                if ($this->valida_token(request('token'))) {
+                if ($this->valida_token(request('token'), request('usuario_id'))) {
                     $usuario_encontrado = $this->usuario->find($usuarioData['id']);
                     if ($usuario_encontrado == null) {
                         return response()->json(['data' => ['msg' => ApiMessages::message(12, "Usuario")]], 201);
@@ -162,7 +162,7 @@ class UsuariosController extends Controller
             // dd($request->all());
             $usuarioData = $request->all();
             if (isset($usuarioData['token'])) {
-                if ($this->valida_token(request('token'))) {
+                if ($this->valida_token(request('token'), request('usuario_id'))) {
                     $usuario_encontrado = $this->usuario->find($usuarioData['id']);
                     if (isset($usuario_encontrado)) {
                         $usuario_encontrado->delete($usuarioData);
