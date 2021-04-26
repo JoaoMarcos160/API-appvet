@@ -75,6 +75,10 @@ class ClientesController extends Controller
             if ($clienteData == []) {
                 return response()->json(ApiError::errorMessage("Sem dados enviados", 404), 404);
             }
+            // dd(request());
+            // if ($clienteData == []) {
+            //     return response()->json(ApiError::errorMessage("Sem dados enviados", 404), 404);
+            // }
             if (isset($clienteData['token'])) {
                 if ($this->valida_token(request('token'), request('usuario_id'))) {
                     $cliente_encontrado = $this->cliente->find($clienteData['id']);
