@@ -15,7 +15,7 @@ class CriarTabelaTokens extends Migration
     {
         Schema::create('tokens', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('tokem');
+            $table->string('token');
             $table->integer('usuario_id')->unsigned();
             $table->foreign('usuario_id')->references('id')->on('usuarios')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();

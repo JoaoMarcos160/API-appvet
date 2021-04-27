@@ -137,11 +137,11 @@ class ConsultasController extends Controller
                         $consultas_encontradas = $query->get();
 
                         /*
-                AQUI EM BAIXO NESSE FOREACH ERA UMA TENTATIVA DE 
-                LER O REQUEST E COLOCAR CADA PARAMETRO AUTOMATICAMENTE
-                NA QUERY, MAS DECIDI FAZER CADA UMA SEPARADA PARA MAPEAR CERTO
-                QUAIS OS PARAMETROS E OS CAMPOS DA CONSULTA, EVITANDO ASSIM BUGS.
-                */
+                        AQUI EM BAIXO NESSE FOREACH ERA UMA TENTATIVA DE 
+                        LER O REQUEST E COLOCAR CADA PARAMETRO AUTOMATICAMENTE
+                        NA QUERY, MAS DECIDI FAZER CADA UMA SEPARADA PARA MAPEAR CERTO
+                        QUAIS OS PARAMETROS E OS CAMPOS DA CONSULTA, EVITANDO ASSIM BUGS.
+                        */
                         // foreach ($consultaData as $key => $value) {
                         //     $query->when(
                         //         isset($consultaData[$key]),
