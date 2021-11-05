@@ -50,9 +50,6 @@ Route::namespace("Api")->group(function () {
         Route::delete("/", "ConsultasController@deletar")->name("deletar_consultas");
     });
     Route::prefix("ok")->group(function () {
-        Route::get("/", function () {
-            //função só pra conferir se a api está online
-            return response()->json(["status" => true]);
-        })->name("ok");
+        Route::get("/", "UsuariosController@ok")->name("ok");
     });
 });

@@ -179,4 +179,10 @@ class UsuariosController extends Controller
             return response()->json(ApiError::errorMessage(ApiMessages::message(2, __FUNCTION__), 1010), 500);
         }
     }
+
+    public function ok()
+    {
+        //função só pra conferir se a api está online
+        return response()->json(["status" => true]);
+    }
 }
